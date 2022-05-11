@@ -1,0 +1,4 @@
+class=com.controller.Service1
+method=doService1
+class2=com.controller.Service2
+method2=doService2

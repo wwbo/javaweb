@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加员工信息</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <script src="resources/jquery.min.js"></script>
+    <link href="resources/personalInfo/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="resources/personalInfo/css/style.css" rel='stylesheet' type='text/css'/>
+</head>
+<body>
+<div class="center-container">
+
+    <div class="w3ls_banner_info">
+        <h1 style="font-size: 30px;">添加员工信息</h1>
+        <div class="profile">
+
+            <div class="wrap">
+                <div class="profile-main" style="margin-bottom: 50px;width: 600px;">
+                    <div class="profile-pic wthree">
+                        <form class="layui-form" id="add-user-form">
+                            <table align="center" border="0" width="800px;"
+                                   style="font-size:15px;line-height: 60px;text-align: center;">
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 30px;">
+                                            <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="name" name="name" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" pane=""
+                                             style="margin-top: -10px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 15px;">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+                                            <div class="layui-input-block" style="margin-top: 10px;">
+                                                <input type="radio" id="man" name="sex" value="男" title="男" checked="">
+                                                <input type="radio" id="woman" name="sex" value="女" title="女">
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 5px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 0px;">部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;门：</label>
+                                            <div class="layui-input-block" style="width: 400px;">
+                                                <select id="depart" name="depart" lay-filter="depart">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 8px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">手机号码：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="phone" name="phone" lay-verify="phone"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="email" name="email" lay-verify="email"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;">
+                                            <div class="layui-inline" style="margin-left: 30px;">
+                                                <label class="layui-form-label">出生日期：</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" class="layui-input" id="test17"
+                                                           lay-verify="required"
+                                                           autocomplete="off" style="width: 400px;" name="birthday">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;">
+                                            <div class="layui-inline" style="margin-left: 30px;">
+                                                <label class="layui-form-label">入职时间：</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" class="layui-input" id="test18"
+                                                           lay-verify="required"
+                                                           autocomplete="off" style="width: 400px;" name="hiredate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 8px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 0px;">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：</label>
+                                            <div class="layui-input-block" style="width: 400px;">
+                                                <select id="edu" name="edu" lay-filter="edu">
+                                                    <option value="博士后">博士后</option>
+                                                    <option value="博士">博士</option>
+                                                    <option value="研究生">研究生</option>
+                                                    <option value="本科" selected="">本科</option>
+                                                    <option value="大专">大专</option>
+                                                    <option value="高中">高中</option>
+                                                    <option value="初中">初中</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 8px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;资：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="wage" name="wage" lay-verify="number"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="password" name="password" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;"
+                                                       readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-left: -60px;margin-top: 0px;">
+                                            <div class="layui-input-block">
+                                                <button class="layui-btn layui-icon layui-btn-radius" lay-submit
+                                                        lay-filter="add-user-form-submit" style="width: 100px;">立即提交
+                                                </button>
+                                                <button type="reset"
+                                                        class="layui-btn layui-btn-radius layui-btn-primary"
+                                                        style="width: 100px;">重置
+                                                </button>
+                                                <button type="button"
+                                                        class="layui-btn layui-btn-radius layui-btn-danger"
+                                                        style="width: 100px;" id="getPassword">生成密码
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    $.ajax({
+        url: 'listDepart',
+        method: 'get',
+        dataType: 'json',
+        success: function (data) {
+            console.log(data.data.length);
+            for (var i=0; i<data.data.length; i++){
+                $('#depart').append("<option value="+data.data[i].dept_name+">"+data.data[i].dept_name+"</option>");
+            }
+        }
+    })
+    layui.use(['upload', 'form', 'layedit', 'laydate'], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , layer = layui.layer
+            , laydate = layui.laydate
+
+        laydate.render({
+            elem: '#test17'
+            , calendar: true
+        });
+        laydate.render({
+            elem: '#test18'
+            , calendar: true
+        });
+        $('#getPassword').click(function () {
+            $.ajax({
+                url: 'getPwd',
+                method: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    var pwd = data.pwd;
+                    $('#password').val(pwd);
+                }
+            });
+        })
+        function clean(){
+            $('#name').val('');
+            $('#phone').val('');
+            $('#email').val('');
+            $('#test17').val('');
+            $('#test18').val('');
+            $('#wage').val('');
+            $('#password').val('');
+        }
+        // 添加用户表单提交
+        form.on('submit(add-user-form-submit)',
+            function (data) {
+                // ajax方式添加用户
+                $.ajax({
+                    url: "addEmployeeInfo",
+                    type: "post",
+                    data: JSON.stringify(data.field),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                           // clean();
+                            layer.msg('添加成功');
+                        } else {
+                            layer.msg('添加失败');
+                        }
+                    },
+                    error: function () {
+                        console.log("ajax error");
+                    }
+                });
+                // 阻止表单跳转
+                return false;
+            });
+
+    });
+
+</script>
+</body>
+</html>

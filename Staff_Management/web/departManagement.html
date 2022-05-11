@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <style>
+        .addwidth {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- 页面内容结构 -->
+
+<!-- 表格上方标题 -->
+<blockquote class="layui-elem-quote">部门信息列表</blockquote>
+<!-- 员工信息表 -->
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-icon layui-icon-edit" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs layui-icon layui-icon-delete" lay-event="del">删除</a>
+</script>
+
+<!-- 添加和批量删除模块 -->
+
+<script type="text/html" id="toolbarDemo">
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-refresh" id="returnList">返回列表</button>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-add-circle-fine" id="add-user-btn" style="margin-left: 10px;">添加部门</button>
+</script>
+
+<!-- 分页模块 -->
+<div id="pages"></div>
+
+
+<!-- 添加员工信息弹出层 -->
+<div id="add-user-layer" style="display: none; padding:30px;">
+    <form id="add-user-form" class="layui-form layui-form-pane"
+          method="post">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">创建时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" class="layui-input" name="established" id="test20"
+                           lay-verify="required" style="width: 280px;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <label class="layui-form-label">部门名</label>
+            <div class="layui-input-block">
+                <input type="text" name="dept_name" class="layui-input"
+                       lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <label class="layui-form-label">部门地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="dept_address" class="layui-input"
+                       lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-icon layui-icon-ok" lay-submit
+                        lay-filter="add-user-form-submit" style="width: 128px;">提交
+                </button>
+                <button type="reset"
+                        class="layui-btn layui-btn-primary layui-icon layui-icon-refresh"  style="width: 128px;float: right">重置
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 编辑员工信息弹出层 -->
+<div id="update-user-layer" style="display: none; padding: 30px;">
+    <form id="update-user-form" class="layui-form layui-form-pane"
+          lay-filter="update-user-form" method="post">
+        <input type="hidden" autocomplete="off" class="layui-input" name="dept_id"
+                   lay-verify="required">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">创建时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" autocomplete="off" class="layui-input" name="established" id="test21"
+                           lay-verify="required" style="width: 280px;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <label class="layui-form-label">部门名</label>
+            <div class="layui-input-block">
+                <input type="text" name="dept_name" class="layui-input"
+                       lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <label class="layui-form-label">部门地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="dept_address" class="layui-input"
+                       lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 35px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-icon layui-icon-ok" lay-submit
+                        lay-filter="udpate-user-form-submit" style="width: 128px;">提交
+                </button>
+                <button type="reset"
+                        class="layui-btn layui-btn-primary layui-icon layui-icon-refresh"  style="width: 128px;float: right">重置
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form', 'laydate'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+            var laydate = layui.laydate;
+
+            //开启公历节日
+            laydate.render({
+                elem: '#test20'
+                , calendar: true
+            });
+            laydate.render({
+                elem: '#test21'
+                , calendar: true
+            });
+
+            function showAll(url_data, method_data) {
+                //显示所有员工信息
+                table.render({
+                    elem: '#test',
+                    url: url_data,
+                    method: method_data,
+                    limit: 8,
+                    toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: ['filter', 'exports', 'print'],
+                    title: '部门信息表',
+                    cols: [[{
+                        type: 'checkbox',
+                        fixed: 'left'
+                    }, {
+                        field: 'dept_id',
+                        title: '部门号',
+                        sort: true,
+                        align: 'center',
+                        fixed: 'left',
+                        width: 150
+                    }, {
+                        field: 'dept_name',
+                        title: '部门名',
+                        align: 'center'
+                    }, {
+                        field: 'estab',
+                        title: '创建时间',
+                        align: 'center'
+                    }, {
+                        field: 'dept_address',
+                        title: '地址',
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        fixed: 'right',
+                        title: '操作',
+                        toolbar: '#barDemo',
+                        align: 'center',
+                        width: 180
+                    }]],
+                    id: 'user_id'
+                });
+            }
+
+            //显示所有员工信息
+            showAll('listDepart', 'get');
+
+            function shuju(url_data1, url_data2) {
+                $.ajax({
+                    url: url_data1,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [5, 8, 16, 30, 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                //首次不执行
+                                if (!first) {
+                                    showAll(url_data2 + "start="
+                                        + (obj.curr - 1)
+                                        * obj.limit + "&count="
+                                        + obj.limit, "get");
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            shuju('countDepart', 'listDepart?');
+            // 显示添加员工信息弹出层
+            $('body').on('click', '#add-user-btn', function () {
+                // 每次显示前重置表单
+                $('#add-user-form')[0].reset();
+                layer.open({
+                    type: 1,
+                    title: '添加部门',
+                    skin: 'layui-layer-molv',
+                    area: ['450px'],
+                    content: $('#add-user-layer'),
+                    offset: '60px'
+                });
+            });
+            function checkDepart(str,callback){
+                $.ajax({
+                    url: 'alllistDepart',
+                    method: 'get',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data1) {
+                        for (var i=0; i<data1.data.length; i++){
+                            if (data1.data[i].dept_name == str){
+                                callback(false);
+                                return;
+                            }
+                        }
+                        callback(true);
+                        return;
+                    }
+                })
+            }
+            // 添加用户表单提交
+            form.on('submit(add-user-form-submit)', function (data) {
+                checkDepart(data.field.dept_name, function (data2) {
+                    if (data2 == true || data2 == "true"){
+                        // ajax方式添加部门
+                        $.ajax({
+                            url: "addDepart",
+                            type: "post",
+                            data: JSON.stringify(data.field),
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.status == 1) {
+                                    layer.close(layer.index);
+                                    form.render();
+                                    layer.msg('添加成功');
+                                    shuju('countDepart', 'listDepart?');
+                                    table.reload('user_id');
+                                } else {
+                                    layer.msg('添加失败');
+                                }
+                            },
+                            error: function () {
+                                console.log("ajax error");
+                            }
+                        });
+                        // 阻止表单跳转
+                    } else {
+                        layer.msg('已有此部门，请重新填写');
+                    }
+                })
+                return false;
+            });
+
+            //监听行工具栏事件：删除用户与更新用户
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                var event = obj.event;
+                // 删除用户事件
+                if (event === 'del') {
+                    layer.confirm('确定删除该部门吗？', function (index) {
+                        // ajax方式删除用户
+                        $.ajax({
+                            url: 'deleteDepart',
+                            type: "post",
+                            data: {
+                                "id": data.dept_id
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.status == 1) {
+                                    layer.msg('删除成功');
+                                    table.reload('user_id');
+                                    shuju('countDepart', 'listDepart?');
+                                } else {
+                                    layer.msg('删除失败');
+                                }
+                            },
+                            error: function () {
+                                console.log("ajax error");
+                            }
+                        });
+                        layer.close(index);
+                    });
+                }
+
+                //编辑员工信息
+                if (event == 'edit') {
+                    form.val('update-user-form', {
+                        'dept_id': data.dept_id,
+                        'dept_name': data.dept_name,
+                        'established': data.estab,
+                        'dept_address': data.dept_address,
+                    });
+                    // 显示更新员工信息表单的弹出层
+                    layer.open({
+                        type: 1,
+                        title: '编辑部门 （ 部门号：' + data.dept_id + ' )',
+                        skin: 'layui-layer-molv',
+                        area: ['450px'],
+                        content: $('#update-user-layer'),
+                        offset: '60px'
+                    });
+                    // 更新用户表单提交
+                    form.on('submit(udpate-user-form-submit)',
+                        function (data) {
+                            // ajax方式添加用户
+                            $.ajax({
+                                url: "updateDepart",
+                                type: "post",
+                                data: JSON.stringify(data.field),
+                                contentType: 'application/json',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 1) {
+                                        layer.close(layer.index);
+                                        form.render();
+                                        layer.msg('更新成功');
+                                        table.reload('user_id');
+                                    } else {
+                                        layer.msg('更新失败');
+                                    }
+                                },
+                                error: function () {
+                                    console.log("ajax error");
+                                }
+                            });
+                            // 阻止表单跳转
+                            return false;
+                        });
+                }
+            });
+
+            $('body').on('click', '#returnList', function () {
+                shuju('countDepart', 'listDepart?');
+                showAll('listDepart', 'get');
+            })
+
+            /*//检验id的合法性
+            $('body').on('click', '#search-from-id', function () {
+                var sid = $("#selectid").val();
+                if (sid == "") {
+                    layer.msg('不能为空');
+                    return false;
+                }
+                else if (!(/(^[1-9]\d*$)/.test(sid))) {
+                    layer.msg('请输入合法id');
+                    return false;
+                } else {
+                    shuju("search-from-id?id=" + sid,
+                        'list?');
+                    showAll("search-from-id?id=" + sid,
+                        "GET");
+                }
+            })*/
+
+            /*$('body').on(
+                'click',
+                '#search-from-depart',
+                function () {
+                    var depart = $("#depart").val();
+                    if (depart == "") {
+                        layer.msg("不能为空");
+                        return false;
+                    } else {
+                        shuju('search-from-depart?depart=' + depart
+                            + "&page=1&limit=8",
+                            'search-from-depart?depart=' + depart
+                            + '&');
+                        showAll('search-from-depart?depart=' + depart,
+                            "GET");
+                    }
+                })*/
+
+        });
+</script>
+</body>
+</html>

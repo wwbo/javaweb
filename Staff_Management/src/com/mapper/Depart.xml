@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.DepartMapper">
+    <!--<update id="updateAttendanceSetting" parameterType="AttendanceSetting">
+        update attendancesetting set starttime=#{starttime},lateststarttime=#{lateststarttime},endtime=#{endtime}
+    </update>-->
+    <select id="allDepart" resultType="Depart">
+        select dept_id,dept_name,dept_address,established from depart
+        limit #{start},#{count}
+    </select>
+    <select id="allListDepart" resultType="Depart">
+        select dept_id,dept_name,dept_address,established from depart
+    </select>
+    <insert id="addDepart" parameterType="Depart">
+        insert into depart(dept_name,dept_address,established) values (#{dept_name},#{dept_address},#{established})
+    </insert>
+    <delete id="deleteDepart" parameterType="int">
+        delete from depart where dept_id = #{dept_id}
+    </delete>
+    <update id="updateDepart" parameterType="Depart">
+        update depart set dept_name=#{dept_name},dept_address=#{dept_address},established=#{established}
+        where dept_id = #{dept_id}
+    </update>
+    <select id="countDepart" resultType="int">
+        select count(*) from depart
+    </select>
+    <select id="selectDepartId" parameterType="String" resultType="int">
+        select dept_id from depart where dept_name = #{dept_name}
+    </select>
+    <select id="selectDepartName" resultType="String">
+select d.dept_name from employee e
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+where e.id = #{id}
+    </select>
+    <select id="selectDepartIdByEid" resultType="int">
+        select did from employee_depart
+        where eid = #{eid}
+    </select>
+</mapper>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>请假申请</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <link href="resources/personalInfo/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="resources/personalInfo/css/style.css" rel='stylesheet' type='text/css'/>
+    <script src="resources/jquery.min.js" charset="UTF-8"></script>
+</head>
+<body>
+
+<div class="center-container">
+
+    <div class="w3ls_banner_info" style="height: 100%;">
+        <h1 style="font-size: 30px;">请假申请</h1>
+        <div class="profile">
+
+            <div class="wrap">
+                <div class="profile-main" style="margin-bottom: 50px;width: 700px;">
+                    <div class="profile-pic wthree">
+                        <form class="layui-form" id="add-user-form" method="post">
+                            <table align="center" border="1" width="700px;"
+                                   style="font-size:15px;line-height: 60px;text-align: center;">
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left:0px;">
+                                            <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="name" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">所属部门：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="depart" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">填表日期：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="filldate" name="filldate" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" pane="">
+                                            <label class="layui-form-label" style="margin-top: 17px;margin-left: 0px;">请假时间：</label>
+                                                <div class="layui-input-inline" style="margin-top: 17px;margin-left: 0px;">
+                                                    <input type="text" class="layui-input" id="test6" name="startendtime"
+                                                           autocomplete="off" style="width: 220px;" lay-verify="required">
+                                                </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">对应天数：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="datenumber" name="days"
+                                                       autocomplete="off" style="float: left; width: 50px;"
+                                                       class="layui-input" readonly="readonly" lay-verify="required">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item layui-form-text" style="margin-top: 20px;">
+                                            <label class="layui-form-label" style="margin-top: -10px;">请假理由：</label>
+                                            <div class="layui-input-block">
+                                                <textarea class="layui-textarea" name="reason" id="reason"
+                                                          lay-verify="required"></textarea>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;margin-bottom: -5px;">
+                                            <div class="layui-input-block">
+                                                <button class="layui-btn layui-icon layui-btn-radius" lay-submit id="sub"
+                                                        lay-filter="add-user-form-submit" style="width: 100px;">立即提交
+                                                </button>
+                                                <button type="button" id="res"
+                                                        class="layui-btn layui-btn-radius layui-btn-danger"
+                                                        style="width: 100px;">重置
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left; color: red; font-size: 5px">
+                                        *注意：请假天数不包括周六周日，请假申请每天只可提交一次，请谨慎申请。一旦提交，不可撤回！
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    window.onload = function () {
+        nowTime();
+    }
+    $('#res').click(function () {
+        $('#reason').val('');
+    })
+    layui.use(['upload', 'form', 'layedit', 'laydate'], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , layer = layui.layer
+            , laydate = layui.laydate
+
+        function AjaxInfo() {
+            $.ajax({
+                url: 'search-to-id',
+                method: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    $('#name').val(data.data[0].name);
+                    $('#depart').val(data.data[0].depart);
+                },
+                error: function () {
+                    console.log('获取数据错误');
+                }
+            })
+        }
+        //日期范围
+        laydate.render({
+            elem: '#test6',
+            range: '~',
+            change: function (value, date, endDate) {
+                var startDate = value.substr(0,10);
+                var endDate = value.substr(13,10);
+                var start = new Date(Date.parse(startDate));
+                var dd = start.getDay();
+                var starTime = new Date(Date.parse(startDate)).getTime();
+                var endTime = new Date(Date.parse(endDate)).getTime();
+                var days = Math.abs((endTime - starTime)/(1000*60*60*24)) + 1;
+                var weekEnds = 0;
+                for(var i=0; i< days; i++){
+                    if (dd == 0 || dd == 6) {
+                        weekEnds++;
+                    }
+                    dd = start.getTime();
+                    dd += 1000 * 60 * 60 * 24 * (i+1);
+                    dd = new Date(dd).getDay();
+                }
+                $('#datenumber').val(days - weekEnds);
+            }
+        });
+
+        AjaxInfo();
+        //提交请假请求
+        function subLeavetime(data1) {
+            $.ajax({
+                url: "insertLeave",
+                type: "post",
+                data: JSON.stringify(data1.field),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        form.render();
+                        layer.msg('提交成功');
+                        return false;
+                    } else {
+                        layer.msg('提交失败,请选择加班时间');
+                        return false;
+                    }
+                },
+                error: function () {
+                    console.log("ajax error");
+                }
+            });
+            // 阻止表单跳转
+            return false;
+        }
+        form.on('submit(add-user-form-submit)',
+            function (data1) {
+                $.ajax({
+                    url: 'leaveFilltime',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            layer.msg('今日已提交申请，不可重复提交');
+                        } else {
+                            subLeavetime(data1);
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg('获取数据错误');
+                    },
+                })
+                return false;
+            })
+    });
+
+    //获取当前日期时间
+    function nowTime() {      //获取当前时间的函数
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        month = checkTime(month);
+        day = checkTime(day);
+        var txt = year + "-" + month + "-" + day;
+        $('#filldate').val(txt);
+    }
+
+    function checkTime(i) {   //检查分和秒，如果小于10，则在数字前加上0
+        if (i < 10) {
+            i = "0" + i
+        }
+        return i
+    }
+
+</script>
+</body>
+</html>

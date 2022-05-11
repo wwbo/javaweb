@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.AnnouncementMapper">
+    <select id="selectAnnounce" resultType="Announcement">
+        select id,title,releaseTime,roleToSee,content,author,eid from announcement
+         order by releaseTime desc
+          limit #{start},#{count}
+    </select>
+    <select id="selectAnnounceByE" resultType="Announcement">
+        select id,title,releaseTime,roleToSee,content,author,eid from announcement
+        where roleToSee = '全部员工'
+         order by releaseTime desc
+          limit #{start},#{count}
+    </select>
+    <insert id="insertAnnounce" parameterType="Announcement">
+        insert into announcement(title,releaseTime,roleToSee,content,author,eid)
+        values (#{title},#{releaseTime},#{roleToSee},#{content},#{author},#{eid})
+    </insert>
+    <select id="selectRoleById" resultType="String" parameterType="int">
+        select r.desc_ 'name' from employee e
+          left join employee_role er
+          on e.id = er.eid
+          left join role r
+          on r.id = er.rid
+          where e.id = #{id}
+    </select>
+    <update id="updateAnnounce" parameterType="Announcement">
+		update announcement set
+		 title=#{title},roleToSee=#{roleToSee},content=#{content}
+		  where id = #{id}
+	</update>
+    <delete id="deleteAnnounce" parameterType="int">
+        delete from announcement where id = #{id}
+    </delete>
+    <select id="countAnnounce" resultType="int">
+        select count(*) from announcement
+    </select>
+    <select id="countAnnounceByE" resultType="int">
+        select count(*) from announcement
+        where roleToSee = '全部员工'
+    </select>
+</mapper>

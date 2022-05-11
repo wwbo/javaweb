@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <mapper namespace="com.mapper.PunchClockMapper">
+        <insert id="add_in" parameterType="PunchClock">
+           insert into punchclock(id,employeeid,punch_inTime,punch_outTime,attendanceTime,remark,ps)
+           values(null,#{employeeid},#{punch_inTime},#{punch_outTime},#{attendanceTime},#{remark},#{ps})
+        </insert>
+        <update id="up_out" parameterType="PunchClock">
+           update punchclock set punch_outTime=#{punch_outTime} where attendanceTime=#{attendanceTime} and employeeid=#{employeeid}
+        </update>
+        <update id="late_result" parameterType="PunchClock">
+           update punchclock set remark=#{remark} where attendanceTime=#{attendanceTime} and employeeid=#{employeeid}
+        </update>
+        <select id="if_punchin" parameterType="PunchClock" resultType="PunchClock">
+           select punch_inTime,ps from punchclock where attendanceTime=#{attendanceTime} and employeeid=#{employeeid}
+        </select>
+        <select id="if_punchout" parameterType="PunchClock" resultType="PunchClock">
+           select punch_outTime from punchclock where attendanceTime=#{attendanceTime} and employeeid=#{employeeid}
+        </select>
+        <select id="all_punchin" parameterType="int" resultType="java.util.Date">
+           select punch_inTime from punchclock where employeeid=#{employeeid}
+        </select>
+        <select id="all_punchout" parameterType="int" resultType="java.util.Date">
+           select punch_outTime from punchclock where employeeid=#{employeeid}
+        </select>
+        <select id="allinfo" parameterType="int" resultType="PunchClock">
+            select p.employeeid,e.name,p.punch_inTime,p.punch_outTime,p.ps from punchclock p
+            left join employee e
+            on p.employeeid = e.id
+            where p.employeeid = #{eid}
+            order by p.attendanceTime desc
+            limit #{start},#{count}
+        </select>
+        <select id="allinfobydate" resultType="PunchClock">
+            select p.employeeid,e.name,p.punch_inTime,p.punch_outTime,p.ps from punchclock p
+            left join employee e
+            on p.employeeid = e.id
+            where p.employeeid = #{eid} and p.attendanceTime like concat('%',#{date},'%')
+            order by p.attendanceTime desc
+            limit #{start},#{count}
+        </select>
+        <select id="total" resultType="int">
+		     select count(*) from punchclock where employeeid = #{employeeid}
+	    </select>
+    <select id="totalbydate" resultType="int">
+        select count(*) from punchclock where employeeid = #{employeeid} and attendanceTime like concat('%',#{date},'%')
+    </select>
+        <select id="all" resultType="PunchClock">
+            select p.employeeid,e.name,e.depart,r.desc_ 'role',p.punch_inTime,p.punch_outTime,p.ps,p.attendanceTime from punchclock p
+            left join employee e
+            on p.employeeid = e.id
+            left join employee_role er
+            on e.id = er.eid
+            left join role r
+            on er.rid = r.id
+            limit #{start},#{count}
+        </select>
+        <select id="allLeave" resultType="PunchClock">
+            select 
+              sum(if(e.id = lt.eid and lt.`status`='已通过' and lt.starttime like concat('%',#{date},'%'),lt.days,0)) 'leave'
+              from employee e,leavetime lt
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+        </select>
+        <select id="allNormal" resultType="PunchClock">
+            select e.id 'employeeid', e.name, d.dept_name 'depart',pc.attendanceTime,
+               sum(if(e.id = pc.employeeid and pc.attendanceTime like concat('%',#{date},'%') and pc.ps='正常' and pc.punch_outTime!='',1,0)) 'normal'
+               from employee e,punchclock pc,employee_depart ed,depart d
+							 where e.id = ed.eid and d.dept_id = ed.did
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+        </select>
+    <select id="allRole" resultType="Employee">
+           select r.desc_ 'role' from employee e
+               left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+    </select>
+        <select id="allLate" resultType="PunchClock">
+            select 
+               sum(if(e.id = pc.employeeid and pc.ps='迟到' and pc.attendanceTime like concat('%',#{date},'%'),1,0)) 'late'
+               from employee e,punchclock pc
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+        </select>
+    <select id="qdnotnull" resultType="PunchClock">
+        select sum(if(e.id = pc.employeeid and pc.punch_inTime != '' and pc.attendanceTime like concat('%',#{date},'%'),1,0)) 'qd'
+               from employee e,punchclock pc
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+    </select>
+        <select id="allTravel" resultType="PunchClock">
+            select
+              sum(if(e.id = ts.eid and ts.`status`='已通过' and ts.starttime like concat('%',#{date},'%'),ts.days,0)) 'travel'
+              from employee e,travelschedule ts
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+        </select>
+        <select id="allOvertime" resultType="PunchClock">
+            select
+              sum(if(e.id = ot.eid and ot.`status`='已通过' and ot.starttime like concat('%',#{date},'%'),ot.days,0)) 'overtime'
+              from employee e,overtime ot
+            group by e.id
+            order by e.id asc
+            limit #{start},#{count}
+        </select>
+    <select id="allLeaveEarly" resultType="PunchClock">
+        select
+          sum(if(e.id = pc.employeeid and pc.punch_outTime is null and pc.attendanceTime like concat('%',#{date},'%'),1,0)) 'LeaveEarly'
+          from employee e,punchclock pc
+          group by e.id
+        order by e.id asc
+        limit #{start},#{count}
+    </select>
+        <!--<select id="allOvertime" resultType="PunchClock">-->
+            <!--select e.id,-->
+               <!--sum(if(e.id = ot.eid and ot.status='已通过' and ot.filldate like '2020-02%',days,0)) 'overtime'-->
+               <!--from employee e,overtime ot-->
+            <!--group by e.id-->
+            <!--order by e.id asc-->
+        <!--</select>-->
+    </mapper>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <style>
+        .addwidth {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- 页面内容结构 -->
+<!-- 表格上方标题 -->
+<blockquote class="layui-elem-quote" style="text-align: center;font-size: 22px;color: red; ">
+    统计记录：<span id="spantext"></span><span id=""></span>
+</blockquote>
+<!-- 员工信息表 -->
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<!--<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>-->
+
+<!-- 添加和批量删除模块 -->
+
+<script type="text/html" id="toolbarDemo">
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-refresh" id="returnList">返回数据列表</button>
+    <div class="layui-inline" style="margin-left: 5px;">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 120px;">日期选择：</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="test3" placeholder="yyyy-MM" style="margin-left:-10px;margin-right:5px;width: 100px;height: 33px;margin-top: 2px;">
+            </div>
+        </div>
+    </div>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-search" id="search">搜索</button>
+</script>
+
+<!-- 分页模块 -->
+<div id="pages"></div>
+
+<!--<div style="color:red;font-size: 3px;">*注意：缺勤天数=应考勤-正常-迟到-请假，注意与出差天数进行对比。</div>-->
+<script>
+
+
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form', 'laydate'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+            var laydate = layui.laydate;
+
+            function showAll(url_data, method_data) {
+                //显示所有员工信息
+                table.render({
+                    elem: '#test',
+                    url: url_data,
+                    method: method_data,
+                    limit: 8,
+                    toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: ['filter', 'exports', 'print'],
+                    title: '申请加班记录',
+                    cols: [[
+                        {
+                            field: 'employeeid',
+                            title: 'ID',
+                            sort: true,
+                            align: 'center',
+                            fixed: 'left'
+                        }, {
+                            field: 'name',
+                            title: '姓名',
+                            align: 'center'
+                        }, {
+                            field: 'depart',
+                            title: '部门',
+                            sort: true,
+                            align: 'center'
+                        }, {
+                            field: 'role',
+                            title: '角色',
+                            align: 'center'
+                        }, {
+                            field: 'days',
+                            title: '应出勤',
+                            align: 'center'
+                        }, {
+                            field: 'normal',
+                            title: '正常',
+                            align: 'center'
+                        }, {
+                            field: 'late',
+                            title: '迟到',
+                            align: 'center'
+                        }, {
+                            field: 'leaveEarly',
+                            title: '早退（未签退）',
+                            align: 'center',
+                            width: 130
+                        }, {
+                            field: 'absenteeism',
+                            title: '旷工',
+                            /*templet: setSate,*/
+                            align: 'center'
+                        }, {
+                            field: 'leave',
+                            title: '请假',
+                            align: 'center'
+                        }, {
+                            field: 'travel',
+                            title: '出差',
+                            align: 'center'
+                        }, {
+                            field: 'overtime',
+                            title: '加班',
+                            align: 'center'
+                        }]],
+                    id: 'user_id'
+                });
+            }
+
+            //显示所有员工信息
+            showAll('sign/all-Statistics', 'get');
+
+            function shuju(url_data1, url_data2) {
+                $.ajax({
+                    url: url_data1,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [5, 8, 16, 30, 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                //首次不执行
+                                if (!first) {
+                                    showAll(url_data2 + "start="
+                                        + (obj.curr - 1)
+                                        * obj.limit + "&count="
+                                        + obj.limit, "get");
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            shuju('getStatistics-PageInfo', 'sign/all-Statistics?');
+
+            function setSate(data) {
+                var status = data.status;
+                if (status == '已通过') {
+                    return "<span style='color:green;font-weight:bold;'>已通过</span>"
+                } else if (status == '未通过') {
+                    return "<span style='color:red;font-weight:bold;'>未通过</span>"
+                } else {
+                    return "<span style='font-weight:bold;'>待审批</span>";
+                }
+            }
+
+            $('body').on('click', '#returnList', function () {
+                shuju('getStatistics-PageInfo', 'sign/all-Statistics?');
+                showAll('sign/all-Statistics', 'get');
+                getYM();
+            })
+
+            //获取当前日期时间
+            function getYM() {      //获取当前时间的函数
+                var date = new Date()
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                month = checkTime(month);
+                var txt = year + "年 " + month + "月" ;
+                $('#spantext').html(txt);
+            }
+            getYM();
+
+            function checkTime(i) {   //检查分和秒，如果小于10，则在数字前加上0
+                if (i < 10) {
+                    i = "0" + i
+                }
+                return i
+            }
+            $('body').on('click', '#search', function () {
+                var date = $('#test3').val();
+                if ( date == ''){
+                    layer.msg('请输入日期');
+                }else {
+                    $('#spantext').html(date.substr(0,4)+'年 '+date.substr(5,2)+'月');
+                    shuju('getStatistics-PageInfo?date=' + date ,
+                        'sign/all-Statistics?date=' + date
+                        + '&');
+                    showAll('sign/all-Statistics?date=' + date , 'get');
+                }
+            })
+            //年月选择器
+            $('body').on('focus', '#test3', function () {
+                laydate.render({
+                    elem: '#test3'
+                    ,type: 'month'
+                });
+            })
+        });
+</script>
+</body>
+</html>

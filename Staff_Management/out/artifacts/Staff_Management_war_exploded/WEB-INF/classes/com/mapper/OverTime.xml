@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.OverTimeMapper">
+    <insert id="insert" parameterType="OverTime">
+        insert into overtime(eid,days,starttime,endtime,reason,filldate,status) values(#{eid},#{days},#{starttime},#{endtime},#{reason},#{filldate},#{status})
+    </insert>
+    <select id="listOvertimeById" resultType="OverTime">
+        select ot.eid, e.name, r.desc_ 'role', ot.starttime, ot.endtime, (RIGHT(endtime,2)-RIGHT(starttime,2)+1) as number, ot.filldate, ot.reason, ot.status from overtime ot
+        left join employee e
+        on e.id = ot.eid
+        left join employee_role er
+        on ot.eid = er.eid
+        left join role r
+        on er.rid = r.id
+        where ot.eid = #{eid}
+        order by ot.filldate desc
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+    </select>
+    <select id="totalOvertime" resultType="int">
+		select count(*) from overtime where eid = #{eid}
+	</select>
+    <select id="selectFillTime" resultType="OverTime">
+        select filldate from overtime where eid = #{eid}
+    </select>
+    <select id="allApprovalOver" resultType="OverTime">
+SELECT ot.eid,e.name,d.dept_name 'depart',r.desc_ 'role',ot.starttime,ot.endtime,ot.reason,ot.filldate,ot.days,ot.`status` FROM overtime ot
+left join employee e
+on ot.eid = e.id
+left join employee_role er
+on e.id = er.eid
+left join role r
+on er.rid = r.id
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+order by ot.filldate desc
+limit #{start},#{count}
+    </select>
+    <select id="allApprovalOverDepart" resultType="OverTime">
+SELECT ot.eid,e.name,d.dept_name 'depart',r.desc_ 'role',ot.starttime,ot.endtime,ot.reason,ot.filldate,ot.days,ot.`status` FROM overtime ot
+left join employee e
+on ot.eid = e.id
+left join employee_role er
+on e.id = er.eid
+left join role r
+on er.rid = r.id
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+where d.dept_id = #{dept_id}
+order by ot.filldate desc
+    </select>
+    <select id="countApprovalOver" resultType="int">
+        select count(*) from overtime
+    </select>
+    <select id="countApprovalOverDepart" resultType="int">
+        select count(*) from overtime ot
+        left join employee_depart ed
+				on ed.eid = ot.eid
+				left join depart d
+				on d.dept_id = ed.did
+				where d.dept_id = #{dept_id}
+    </select>
+    <update id="rejectOver" parameterType="OverTime">
+        update overtime set status='未通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+    <update id="passOver" parameterType="OverTime">
+        update overtime set status='已通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+</mapper>

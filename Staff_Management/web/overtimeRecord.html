@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <style>
+        .addwidth {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- 页面内容结构 -->
+
+<!-- 表格上方标题 -->
+<blockquote class="layui-elem-quote">加班申请记录</blockquote>
+<!-- 员工信息表 -->
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<!--<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>-->
+
+<!-- 添加和批量删除模块 -->
+
+<script type="text/html" id="toolbarDemo">
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-refresh" id="returnList">返回数据列表</button>
+</script>
+
+<!-- 分页模块 -->
+<div id="pages"></div>
+
+
+<script>
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form', 'laydate'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+
+            function showAll(url_data, method_data) {
+                //显示所有员工信息
+                table.render({
+                    elem: '#test',
+                    url: url_data,
+                    method: method_data,
+                    limit: 8,
+                    toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: ['filter', 'exports', 'print'],
+                    title: '申请加班记录',
+                    cols: [[
+                        {
+                            field: 'eid',
+                            title: 'ID',
+                            sort: true,
+                            align: 'center',
+                            fixed: 'left',
+                            width: 80
+                        }, {
+                            field: 'name',
+                            title: '姓名',
+                            align: 'center'
+                        }, {
+                            field: 'fill',
+                            title: '申请时间',
+                            align: 'center'
+                        }, {
+                            field: 'role',
+                            title: '角色',
+                            align: 'center'
+                        }, {
+                            field: 'start',
+                            title: '开始日期',
+                            sort: true,
+                            align: 'center'
+                        }, {
+                            field: 'end',
+                            title: '结束日期',
+                            align: 'center'
+                        }, {
+                            field: 'number',
+                            title: '天数',
+                            align: 'center',
+                            width: 80
+                        }, {
+                            field: 'reason',
+                            title: '理由',
+                            align: 'center',
+                            width: 130
+                        }, {
+                            field: 'status',
+                            title: '审批状态',
+                            templet: setSate,
+                            align: 'center'
+                        }]],
+                    id: 'user_id'
+                });
+            }
+
+            //显示所有员工信息
+            showAll('searchlist-Overtiem-ById', 'get');
+
+            function shuju(url_data1, url_data2) {
+                $.ajax({
+                    url: url_data1,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [5, 8, 16, 30, 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                //首次不执行
+                                if (!first) {
+                                    showAll(url_data2 + "start="
+                                        + (obj.curr - 1)
+                                        * obj.limit + "&count="
+                                        + obj.limit, "get");
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            shuju('getOvertime-PageInfo', 'searchlist-Overtiem-ById?');
+
+            function setSate(data) {
+                var status = data.status;
+                if (status == '已通过') {
+                    return "<span style='color:green;font-weight:bold;'>已通过</span>"
+                } else if (status == '未通过') {
+                    return "<span style='color:red;font-weight:bold;'>未通过</span>"
+                } else {
+                    return "<span style='font-weight:bold;'>待审批</span>";
+                }
+            }
+
+            $('body').on('click', '#returnList', function () {
+                shuju('getOvertime-PageInfo', 'searchlist-Overtiem-ById?');
+                showAll('searchlist-Overtiem-ById', 'get');
+            })
+
+
+        });
+</script>
+</body>
+</html>

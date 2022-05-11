@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="resources/echarts.min.js"></script>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <script src="resources/jquery.min.js"></script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>部门人数统计</legend>
+</fieldset>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main1" style="width: 48%;height:450px; float: left;"></div>
+<div id="main" style="width: 48%;height:450px; float: right;"></div>
+
+<script type="text/javascript">
+    $.ajax({
+        url: 'getdeparttotal',
+        method: 'get',
+        dataType: 'json',
+        success: function (data) {
+            console.log(data.data);
+            var values = new Array();
+            var names = new Array();
+            var str = new Array();
+            for (var i=0; i<data.data.length; i++){
+                 values[i] = data.data[i].count;
+                 names[i] = data.data[i].depart;
+                 var all = new Object();
+                 all.value = values[i];
+                 all.name = names[i];
+                 str.push(all);
+            }
+            console.log(str);
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var myChart1 = echarts.init(document.getElementById('main1'));
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '各部门人数饼图',
+            subtext: '目前各部门人数',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: names
+        },
+        series: [
+            {
+                name: '部门人数',
+                type: 'pie',
+                radius: '55%',
+                center: ['50%', '60%'],
+                data: str,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)',
+                    }
+                }
+            }
+        ]
+    };
+
+    var option1  = {
+        tooltip: {},
+        xAxis: {
+            data: names
+        },
+        yAxis: {},
+        series: [{
+            name: '部门人数',
+            type: 'bar',
+            data: values
+        }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    myChart1.setOption(option1);
+        }
+    })
+</script>
+</body>
+</html>

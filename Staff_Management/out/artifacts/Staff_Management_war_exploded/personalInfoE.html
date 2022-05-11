@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>查看个人信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="keywords"
+          content="Square Profile Widget a Flat Responsive Widget,Login form widgets, Sign up Web forms , Login signup Responsive web form,Flat Pricing table,Flat Drop downs,Registration Forms,News letter Forms,Elements"/>
+
+    <link href="resources/personalInfo/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="resources/personalInfo/css/style.css" rel='stylesheet' type='text/css'/>
+    <!--webfonts-->
+    <script src="resources/jquery.min.js" charset="UTF-8"></script>
+    <!--<link href="//fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">-->
+    <!--//webfonts-->
+    <style>
+        img{
+            width: 150px;
+            height: 150px;
+            background-size: cover;
+            border-radius: 50%;
+            -webkit-border-radius: 50px;
+            -moz-border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+<!-- main -->
+<div class="center-container">
+
+    <div class="w3ls_banner_info">
+        <h1 style="font-size: 30px;" id="grxx"></h1>
+        <div class="profile">
+
+            <div class="wrap">
+                <div class="profile-main" style="margin-bottom: 50px;">
+                    <div class="profile-pic wthree">
+                        <img src="" alt="">
+                        <h3 id="name"></h3>
+                        <table style="line-height: 50px; width: 100%; text-align: left; font-size: 18px;margin-top: 30px;">
+                            <tr>
+                                <td style="width: 6%"></td>
+                                <td style="text-align: center; width: 25%">工号：</td>
+                                <td id="id" style="width: 25%"></td>
+                                <td style="text-align: center;width: 22%">年龄：</td>
+                                <td id="age" style="width: 22%"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: center">性别：</td>
+                                <td id="sex"></td>
+                                <td style="text-align: center">学历：</td>
+                                <td id="edu"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: center">工资：</td>
+                                <td id="wage"></td>
+                                <td style="text-align: center">密码：</td>
+                                <td id="password"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;入职时间：</td>
+                                <td id="date"></td>
+                                <td style="text-align: center">角色：</td>
+                                <td id="role"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;出生日期：</td>
+                                <td id="birthdate"></td>
+                                <td style="text-align: center">部门：</td>
+                                <td id="depart"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号码：</td>
+                                <td id="phone"></td>
+                                <td style="text-align: center">邮箱：</td>
+                                <td id="email"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    window.onload = function () {
+        oneValues()
+    };
+    function oneValues(){
+        var result;
+        var url=window.location.search; //获取url中"?"符后的字串
+        if(url.indexOf("?")!=-1){
+            result = url.substr(url.indexOf("=")+1);
+            Ajax(result);
+            getURL(result);
+        }
+    }
+    function Ajax(result) {
+        $.ajax({
+            url: 'search-to-id-info?id='+result,
+            method: 'get',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                $('#id').html(data.data[0].id);
+                $('#age').html(data.data[0].age);
+                $('#edu').html(data.data[0].edu);
+                $('#sex').html(data.data[0].sex);
+                $('#depart').html(data.data[0].depart);
+                $('#wage').html(data.data[0].wage);
+                $('#password').html(data.data[0].password);
+                $('#role').html(data.data[0].role);
+                $('#date').html(data.data[0].date);
+                $('#birthdate').html(data.data[0].birthdate);
+                $('#name').html(data.data[0].name);
+                $('#phone').html(data.data[0].phone);
+                $('#email').html(data.data[0].email);
+                $('#grxx').html(data.data[0].name+"信息");
+            },
+            error: function () {
+                console.log('获取信息出错');
+            }
+        })
+    }
+    function getURL(result) {
+        $.ajax({
+            url: 'pictureURLInfo?id='+result,
+            method: 'get',
+            dataType: 'json',
+            success: function(data){
+                var url = data.url;
+                if (url != null)
+                    $('img').attr('src',url);
+            }
+        })
+    }
+</script>
+</body>
+</html>

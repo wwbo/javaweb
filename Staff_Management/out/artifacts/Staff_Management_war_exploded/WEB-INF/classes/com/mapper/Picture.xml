@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.PictureMapper">
+    <insert id="insertPicture" parameterType="Picture">
+        insert into picture(eid,date,name,path) values(#{eid},#{date},#{name},#{path})
+    </insert>
+    <select id="selectPicture" parameterType="int" resultType="String">
+        select path from picture where eid = #{eid}
+    </select>
+    <delete id="deletePicture" parameterType="int">
+        delete from picture where eid = #{eid}
+    </delete>
+    <select id="selectAllPicture" resultType="Picture">
+select e.id,p.path,e.name,d.dept_name from employee e
+left join picture p
+on e.id = p.eid
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+GROUP BY
+e.id
+limit #{start},#{count}
+    </select>
+</mapper>

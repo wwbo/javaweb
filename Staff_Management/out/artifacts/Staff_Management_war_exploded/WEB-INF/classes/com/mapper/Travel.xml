@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.TravelMapper">
+    <insert id="insert" parameterType="Travel">
+        insert into travelschedule(eid,starttime,endtime,reason,filldate,status,days,address) values(#{eid},#{starttime},#{endtime},#{reason},#{filldate},#{status},#{days},#{address})
+    </insert>
+    <select id="listtraveltimeById" resultType="Travel">
+        select ts.eid, e.name, ts.starttime, ts.endtime, days , ts.filldate, ts.reason, ts.status, ts.address from travelschedule ts
+        left join employee e
+        on e.id = ts.eid
+        where ts.eid = #{eid}
+        order by ts.filldate desc
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+    </select>
+    <select id="totalTravleRecord" resultType="int">
+		select count(*) from travelschedule where eid = #{eid}
+	</select>
+    <select id="travelFillTime" resultType="Travel">
+        select filldate from travelschedule where eid = #{eid}
+    </select>
+<select id="allTravelApproval" resultType="Travel">
+    SELECT ts.eid,e.name,d.dept_name 'depart',r.desc_ 'role',ts.starttime,ts.address,ts.endtime,ts.reason,ts.filldate,ts.days,ts.`status` FROM travelschedule ts
+    left join employee e
+    on ts.eid = e.id
+    left join employee_role er
+    on e.id = er.eid
+    left join role r
+    on er.rid = r.id
+    left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+    order by starttime desc
+    limit #{start},#{count}
+</select>
+    <select id="allTreavelApprovalDepart" resultType="Travel">
+        SELECT ts.eid,e.name,d.dept_name 'depart',r.desc_ 'role',ts.starttime,ts.address,ts.endtime,ts.reason,ts.filldate,ts.days,ts.`status` FROM travelschedule ts
+    left join employee e
+    on ts.eid = e.id
+    left join employee_role er
+    on e.id = er.eid
+    left join role r
+    on er.rid = r.id
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+where d.dept_id = #{dept_id}
+    order by starttime desc
+    </select>
+    <select id="countTravel" resultType="int">
+        select count(*) from travelschedule
+    </select>
+    <select id="countTravelDepart" resultType="int">
+        select count(*) from travelschedule ts
+        left join employee_depart ed
+				on ed.eid = ts.eid
+				left join depart d
+				on d.dept_id = ed.did
+				where d.dept_id = #{dept_id}
+    </select>
+    <update id="rejectTravel" parameterType="Travel">
+        update travelschedule set status='未通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+    <update id="passTravel" parameterType="Leave">
+        update travelschedule set status='已通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+</mapper>

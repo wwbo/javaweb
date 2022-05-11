@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.EmployeeMapper">
+    <insert id="add" parameterType="Employee">
+		insert into employee(name,birthday,sex,edu,wage,password,hiredate) values
+		(#{name},#{birthday},#{sex},#{edu},#{wage},#{password},#{hiredate})
+	</insert>
+    <insert id="addInfo" parameterType="Employee">
+		insert into employee(name,birthday,sex,edu,wage,password,hiredate,phone,email) values
+		(#{name},#{birthday},#{sex},#{edu},#{wage},#{password},#{hiredate},#{phone},#{email})
+	</insert>
+    <insert id="addDepartId" parameterType="Map">
+		insert into employee_depart(eid,did) values (#{eid},#{did})
+	</insert>
+    <select id="last_id" resultType="int">
+	    select  max(id) from employee
+	</select>
+    <select id="list" resultType="Employee">
+        select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, dept_name 'depart', e.wage,
+        e.password, e.hiredate, e.birthday, e.phone, e.email , r.desc_ 'role' from employee e
+        left join employee_role er
+        on e.id = er.eid
+        left join Role r
+        on r.id = er.rid
+        left join employee_depart ed
+        on e.id = ed.eid
+        left join depart d
+        on d.dept_id = ed.did
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+    </select>
+    <select id="listByDepartId" resultType="Employee">
+        select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, dept_name 'depart', e.wage,
+        e.password, e.hiredate, e.birthday, e.phone, e.email , r.desc_ 'role', path from employee e
+        left join employee_role er
+        on e.id = er.eid
+        left join Role r
+        on r.id = er.rid
+        left join employee_depart ed
+        on e.id = ed.eid
+        left join depart d
+        on d.dept_id = ed.did
+				left join picture p
+				on e.id = p.eid
+		where d.dept_id = #{dept_id}
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+    </select>
+    <select id="managerSelectById" parameterType="Map" resultType="Employee">
+        select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, dept_name 'depart', e.wage,
+        e.password, e.hiredate, e.birthday, e.phone, e.email , r.desc_ 'role', path from employee e
+        left join employee_role er
+        on e.id = er.eid
+        left join Role r
+        on r.id = er.rid
+        left join employee_depart ed
+        on e.id = ed.eid
+        left join depart d
+        on d.dept_id = ed.did
+				left join picture p
+				on e.id = p.eid
+		where d.dept_id = #{dept_id} and e.id = #{id}
+    </select>
+    <select id="searchById" parameterType="int" resultType="Employee">
+	    select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, d.dept_name 'depart', e.wage, e.password, e.hiredate, e.birthday, e.phone, e.email, r.desc_ 'role' from employee e
+	               left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+                   left join employee_depart ed
+                        on e.id = ed.eid
+                   left join depart d
+                        on d.dept_id = ed.did
+	    where e.id = #{e.id}
+	</select>
+    <select id="searchByName" parameterType="Map" resultType="Employee">
+		select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, e.depart, e.wage, e.password, e.hiredate, e.birthday, e.phone, e.email, r.desc_ 'role' from employee e
+	               left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+	    where e.name like  concat('%',#{name},'%')
+	               limit #{start},#{count}
+	</select>
+    <select id="totalByName" resultType="int">
+		select count(*) from employee where name like concat('%',#{name},'%')
+	</select>
+    <select id="getById" parameterType="int" resultType="Employee">
+	    select * from employee where id = #{id}
+	</select>
+    <select id="searchByDepart" parameterType="Map" resultType="Employee">
+	    select e.id, e.name, TIMESTAMPDIFF(YEAR, e.birthday, CURDATE()) 'age', e.sex, e.edu, d.dept_name 'depart', e.wage, e.password, e.hiredate, e.birthday, e.phone, e.email, r.desc_ 'role' from employee e
+	               left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+									 left join employee_depart ed
+									      on e.id = ed.eid
+									 left join depart d
+								        on d.dept_id = ed.did
+									where ed.did = #{did}
+			       limit #{start},#{count}
+	</select>
+    <select id="total" resultType="int">
+		select count(*) from employee
+	</select>
+    <select id="totalDepart" parameterType="int" resultType="int">
+		select count(*) from employee_depart where did = #{did}
+	</select>
+    <delete id="delete" parameterType="int">
+		delete from employee where id = #{id}
+	</delete>
+    <update id="update" parameterType="Employee">
+		update employee set
+		 name=#{name},birthday=#{birthday},sex=#{sex},edu=#{edu},wage=#{wage},password=#{password},hiredate=#{hiredate}
+		  where id = #{id}
+	</update>
+    <update id="updateById" parameterType="Employee">
+        update employee set
+         name=#{name},birthday=#{birthday},sex=#{sex},password=#{password},phone=#{phone},email=#{email}
+          where id=#{id}
+    </update>
+    <select id="departChart" resultType="Map">
+		select d.dept_name 'depart', count(*) 'count'  from employee e
+        left join employee_depart ed
+				on e.id = ed.eid
+				left join depart d
+				on d.dept_id = ed.did
+         group by d.dept_name
+	</select>
+</mapper>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>申请加班</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <link href="resources/personalInfo/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="resources/personalInfo/css/style.css" rel='stylesheet' type='text/css'/>
+    <script src="resources/jquery.min.js" charset="UTF-8"></script>
+</head>
+<body>
+
+<div class="center-container">
+
+    <div class="w3ls_banner_info" style="height: 100%;">
+        <h1 style="font-size: 30px;">加班申请</h1>
+        <div class="profile">
+
+            <div class="wrap">
+                <div class="profile-main" style="margin-bottom: 50px;width: 700px;">
+                    <div class="profile-pic wthree">
+                        <form class="layui-form" id="add-user-form" method="post">
+                            <table align="center" border="1" width="700px;"
+                                   style="font-size:15px;line-height: 60px;text-align: center;">
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left:0px;">
+                                            <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="name" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">所属部门：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="depart" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">填表日期：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="filldate" name="filldate" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 110px;" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" pane="">
+                                            <label class="layui-form-label" style="margin-top: 17px;margin-left: 0px;">加班时间：</label>
+                                            <div class="layui-input-block">
+                                                <input type="checkbox" lay-filter="start" lay-skin="primary" title="周六"
+                                                       checked="">
+                                                <input type="checkbox" lay-filter="end" lay-skin="primary" title="周日">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 0px;">
+                                            <label class="layui-form-label">对应时间：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="fortime" name="starttime"
+                                                       autocomplete="off" style="float: left; width: 110px;"
+                                                       class="layui-input" readonly="readonly">
+                                                <input type="text" id="fortime1" name="endtime"
+                                                       autocomplete="off" style="width: 110px;"
+                                                       class="layui-input" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item layui-form-text" style="margin-top: 20px;">
+                                            <label class="layui-form-label" style="margin-top: -10px;">加班理由：</label>
+                                            <div class="layui-input-block">
+                                                <textarea class="layui-textarea" name="reason" id="reason"
+                                                          lay-verify="required"></textarea>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: 0px;margin-bottom: -5px;">
+                                            <div class="layui-input-block">
+                                                <button class="layui-btn layui-icon layui-btn-radius" lay-submit
+                                                        id="sub"
+                                                        lay-filter="add-user-form-submit" style="width: 100px;">立即提交
+                                                </button>
+                                                <button type="button" id="res"
+                                                        class="layui-btn layui-btn-radius layui-btn-danger"
+                                                        style="width: 100px;">重置
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left; color: red; font-size: 5px;">
+                                        *注意：申请加班时间，请在周一至周五进行申请，默认本周六至周日；如在周六或周日进行申请，则默认为下周六至周日。
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    window.onload = function () {
+        nowTime();
+        //checkSumbit();
+    }
+    $('#res').click(function () {
+        $('#reason').val('');
+    })
+    layui.use(['upload', 'form', 'layedit', 'laydate'], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , layer = layui.layer
+            , laydate = layui.laydate
+
+        function AjaxInfo() {
+            $.ajax({
+                url: 'search-to-id',
+                method: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    $('#name').val(data.data[0].name);
+                    $('#depart').val(data.data[0].depart);
+                },
+                error: function () {
+                    console.log('获取数据错误');
+                }
+            })
+        }
+
+        AjaxInfo();
+
+        //提交加班请求
+        function subOvertime(data1) {
+            $.ajax({
+                url: "insertOvertime",
+                type: "post",
+                data: JSON.stringify(data1.field),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        form.render();
+                        layer.msg('提交成功');
+                        return false;
+                    } else {
+                        layer.msg('提交失败,请选择加班时间');
+                        return false;
+                    }
+                },
+                error: function () {
+                    console.log("ajax error");
+                }
+            });
+            // 阻止表单跳转
+            return false;
+        }
+
+        var subm = form.on('submit(add-user-form-submit)',
+            function (data1) {
+                $.ajax({
+                    url: 'search-filltime-byid',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            layer.msg('今日已提交申请，不可重复提交');
+                        } else {
+                            subOvertime(data1);
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg('获取数据错误');
+                    },
+                })
+                return false;
+            })
+
+        function whickWeek(whickWeek) {
+            var date = new Date();
+            var nowTime = date.getTime();
+            var week = date.getDay();
+            if (week == 6) {
+                whickWeek += 7;
+            }
+            var dayLongTime = 24 * 60 * 60 * 1000;
+            var STimes = nowTime + (whickWeek - week) * dayLongTime;
+            var Sday = new Date(STimes);
+            var year = Sday.getFullYear();
+            var month = Sday.getMonth() + 1;
+            if (month < 10) {
+                month = "0" + month;
+            }
+            var day = Sday.getDate();
+            return year + "-" + month + '-' + day;
+        }
+
+        $('#fortime').val(whickWeek(6));
+        form.on('checkbox(start)', function (data) {
+            if (data.elem.checked) {
+                $('#fortime').val(whickWeek(6));
+            } else {
+                $('#fortime').val('');
+            }
+        });
+        form.on('checkbox(end)', function (data) {
+            if (data.elem.checked) {
+                $('#fortime1').val(whickWeek(7));
+            } else {
+                $('#fortime1').val('');
+            }
+        });
+
+    });
+
+    //获取当前日期时间
+    function nowTime() {      //获取当前时间的函数
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        month = checkTime(month);
+        day = checkTime(day);
+        var txt = year + "-" + month + "-" + day;
+        $('#filldate').val(txt);
+    }
+
+    function checkTime(i) {   //检查分和秒，如果小于10，则在数字前加上0
+        if (i < 10) {
+            i = "0" + i
+        }
+        return i
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工头像</title>
+    <link rel="stylesheet" type="text/css" href="resources/staffPortrait/1.css">
+    <script src="resources/jquery.min.js"></script>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js"></script>
+</head>
+<body>
+<!-- 上方内容 -->
+<div class="box" style="background: white;">
+    <!-- 图片内容 -->
+    <div style="float: left;margin-bottom: -5px;"><ul></ul></div>
+    <!-- 分页模块 -->
+    <div id="pages" style=";background: white;clear: left;margin-left: 18px;margin-bottom: -10px;"></div>
+</div>
+
+<script>
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form', 'laydate'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+            var laydate = layui.laydate;
+
+            getPicture(0,21);
+
+            function shuju() {
+                $.ajax({
+                    url: 'allPictureInfo?start=0&count=21',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [21, 42, 84 , 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                //首次不执行
+                                if (!first) {
+                                    $('ul li').remove();
+                                    console.log((obj.curr - 1)* obj.limit+" "+obj.limit);
+                                    getPicture((obj.curr - 1)* obj.limit, obj.limit);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            shuju();
+            function getPicture(start,count) {
+                $.ajax({
+                    url: 'allPictureInfo?start='+start+'&count='+count,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        for (var i=0; i<data.data.length; i++){
+                            if (data.data[i].path == null){
+                                data.data[i].path= "/images/1584681551977.png";
+                            }
+                            $('ul').append("<li><div class='deatil'><h2>"+data.data[i].name+"</h2>" +
+                                "<p>"+data.data[i].dept_name+"</p>" +
+                                "<a href='personalInfoE.html?values="+data.data[i].id+"'>查看详情</a></div>" +
+                                "<img style='border:1px solid #000;' src='"+data.data[i].path+"' width='130px' height='138px'/></li>")
+                        }
+                    }
+                })
+            }
+        })
+</script>
+</body>
+</html>

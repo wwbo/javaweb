@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.EmployeeDepartMapper">
+    <!--<delete id="delete" parameterType="int">
+		delete from employee_role where eid = #{eid}
+	</delete>-->
+    <insert id="add" parameterType="EmployeeDepart">
+	    insert into employee_depart(eid,did) values
+		(#{eid},#{did})
+	</insert>
+	<update id="update" parameterType="EmployeeDepart">
+		update employee_depart set did = #{did} where eid = #{eid}
+	</update>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+    <mapper namespace="com.mapper.RoleMapper">
+          <select id="listRolesById" parameterType="int" resultType="Role">
+              select r.id, r.name from employee e
+                   left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+              where e.id = #{0}
+          </select>
+          <update id="upadatRole" parameterType="Map">
+             update employee e,employee_role er 
+                set e.name=#{name},e.password=#{password},e.phone=#{phone},e.email=#{email},er.rid=#{rid}
+	                where e.id = er.eid and e.id= #{id}
+	     </update>
+         <select id="selectRid" parameterType="String" resultType="int">
+             select id from role where desc_ = #{desc_}
+         </select>
+         <insert id="insertRole" parameterType="Role">
+             insert into role(name, desc_) values (#{name}, #{desc_})
+         </insert>
+         <delete id="deleteRole" parameterType="int">
+             delete from role where id = #{id}
+         </delete>
+         <update id="updateRole01" parameterType="Role">
+             update role set name=#{name},desc_=#{desc_}
+             where id = #{id}
+         </update>
+         <select id="countRole" resultType="int">
+             select count(*) from role
+         </select>
+	     <select id="searchByRole" parameterType="Map" resultType="Employee">
+	      select e.id, e.name, e.sex, e.edu, e.depart, e.wage, e.password, e.phone, e.email, r.desc_ 'role' from employee e
+	               left join employee_role er
+                        on e.id = er.eid
+                   left join Role r
+                        on r.id = er.rid
+	      where r.desc_ = #{role}
+			       limit #{start},#{count}
+	    </select>
+	    <select id="totalRole" resultType="int">
+		select count(*) from employee_role where rid = #{rid}
+	    </select>
+        <select id="allRole" resultType="Role">
+            select id,name,desc_ from role
+            limit #{start},#{count}
+        </select>
+    <select id="allListRole" resultType="Role">
+            select id,name,desc_ from role
+        </select>
+    <select id="countERbyRid" resultType="int">
+        select count(*) from employee_role where rid = #{rid}
+    </select>
+    </mapper>
+    

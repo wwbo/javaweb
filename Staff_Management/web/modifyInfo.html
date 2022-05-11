@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改个人信息</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <link href="resources/personalInfo/css/fontawesome-all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="resources/personalInfo/css/style.css" rel='stylesheet' type='text/css'/>
+    <script src="resources/jquery.min.js" charset="UTF-8"></script>
+</head>
+<body>
+
+<div class="center-container">
+
+    <div class="w3ls_banner_info">
+        <h1 style="font-size: 30px;">修改个人信息</h1>
+        <div class="profile">
+
+            <div class="wrap">
+                <div class="profile-main" style="margin-bottom: 50px;width: 600px;">
+                    <div class="profile-pic wthree">
+                        <form class="layui-form" id="udpate-user-form" method="post">
+                            <table align="center" border="0" width="800px;"
+                                   style="font-size:15px;line-height: 60px;text-align: center;">
+                                <tr>
+                                    <td rowspan="3" width="235px;">
+                                        <div class="layui-upload">
+                                            <div class="layui-upload-list" style="margin-bottom: -10px;">
+                                                <img src="" class="layui-upload-img" id="demo1" width="135px;" height="115px;">
+                                                <p id="demoText"></p>
+                                            </div>
+                                            <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"
+                                                    id="test8">选择文件
+                                            </button>
+                                            <button type="button" class="layui-btn layui-btn-sm" id="test9">开始上传
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="layui-form-item" style="margin-top: 10px;margin-left: 30px;">
+                                            <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="name" name="name" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" pane=""
+                                             style="margin-top: -15px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 15px;">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+                                            <div class="layui-input-block">
+                                                <input type="radio" id="man" name="sex" value="男" title="男" checked="">
+                                                <input type="radio" id="woman" name="sex" value="女" title="女">
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: -20px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="password" name="password" lay-verify="required"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;"
+                                                       readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: -20px;">
+                                            <div class="layui-inline" style="margin-left: 30px;">
+                                                <label class="layui-form-label">出生日期：</label>
+                                                <div class="layui-input-inline">
+                                                    <input type="text" class="layui-input" id="test17"
+                                                           lay-verify="required"
+                                                           autocomplete="off" style="width: 400px;" name="birthday">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: -20px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="email" name="email" lay-verify="email"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-top: -20px;margin-left: 30px;">
+                                            <label class="layui-form-label" style="margin-top: 10px;">手机号码：</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="phone" name="phone" lay-verify="phone"
+                                                       autocomplete="off"
+                                                       class="layui-input" style="width: 400px;display: inline-block ;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: left;">
+                                        <div class="layui-form-item" style="margin-left: -60px;margin-top: -15px;">
+                                            <div class="layui-input-block">
+                                                <button class="layui-btn layui-icon layui-btn-radius" lay-submit
+                                                        lay-filter="udpate-user-form-submit" style="width: 100px;">立即提交
+                                                </button>
+                                                <button type="reset"
+                                                        class="layui-btn layui-btn-radius layui-btn-primary"
+                                                        style="width: 100px;">重置
+                                                </button>
+                                                <button type="button"
+                                                        class="layui-btn layui-btn-radius layui-btn-danger"
+                                                        style="width: 100px;" id="getPassword">生成密码
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    window.onload = function () {
+        getURL();
+    }
+    layui.use(['upload', 'form', 'layedit', 'laydate'], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , upload = layui.upload
+            , layer = layui.layer
+            , laydate = layui.laydate
+
+        //选完文件后不自动上传
+        var uploadInst = upload.render({
+            elem: '#test8'
+            , url: 'uploadImg.do' //上传接口
+            , auto: false
+            //,multiple: true
+            , bindAction: '#test9'
+            , choose: function (obj) {
+                var files = obj.pushFile();
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            , done: function (res) {
+                layer.msg('上传成功');
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+        laydate.render({
+            elem: '#test17'
+            , calendar: true
+        });
+        $('#getPassword').click(function () {
+            $.ajax({
+                url: 'getPwd',
+                method: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    var pwd = data.pwd;
+                    $('#password').val(pwd);
+                }
+            });
+        })
+
+        function AjaxInfo() {
+            $.ajax({
+                url: 'search-to-id',
+                method: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    $('#name').val(data.data[0].name);
+                    $('#test17').val(data.data[0].birthdate);
+                    $('#password').val(data.data[0].password);
+                    $('#phone').val(data.data[0].phone);
+                    console.log(data.data[0].phone+"、"+data.data[0].email);
+                    $('#email').val(data.data[0].email);
+                    if (data.data[0].sex == '女') {
+                        $('input[value=女]').prop('checked', true);
+                        form.render('radio');
+                    }
+                },
+                error: function () {
+                    console.log('获取数据错误');
+                }
+            })
+        }
+
+        AjaxInfo();
+        // 更新用户表单提交
+        form.on('submit(udpate-user-form-submit)',
+            function (data) {
+                // ajax方式添加用户
+                $.ajax({
+                    url: "updateById",
+                    type: "post",
+                    data: JSON.stringify(data.field),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            form.render();
+                            layer.msg('更新成功');
+                        } else {
+                            layer.msg('更新失败');
+                        }
+                    },
+                    error: function () {
+                        console.log("ajax error");
+                    }
+                });
+                // 阻止表单跳转
+                return false;
+            })
+    });
+
+    function getURL() {
+        $.ajax({
+            url: 'pictureURL',
+            method: 'get',
+            dataType: 'json',
+            success: function (data) {
+                var url = data.url;
+                console.log(url);
+                if (url != null)
+                $('#demo1').attr('src', url);
+            }
+        })
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <style>
+        .addwidth {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- 页面内容结构 -->
+
+<!-- 表格上方标题 -->
+<!--<blockquote class="layui-elem-quote" style="text-align: center;font-size: 22px;color: red; ">
+    考勤记录：<span id="spantext">全部数据</span>
+</blockquote>-->
+<!-- 员工信息表 -->
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+
+<script type="text/html" id="toolbarDemo">
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-refresh" id="returnList">返回数据列表</button>
+    <div class="layui-inline" style="margin-left: 5px;">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 120px;">日期选择：</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" id="test3" placeholder="yyyy-MM" style="margin-left:-10px;margin-right:5px;width: 100px;height: 33px;margin-top: 2px;">
+            </div>
+        </div>
+    </div>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-search" id="search">搜索</button>
+</script>
+
+<!-- 分页模块 -->
+<div id="pages"></div>
+
+
+<script>
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form', 'laydate', 'laydate'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+            var laydate = layui.laydate;
+
+
+            function showAll(url_data, method_data) {
+                //显示所有员工信息
+                table.render({
+                    elem: '#test',
+                    url: url_data,
+                    method: method_data,
+                    limit: 8,
+                    toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: ['filter', 'exports', 'print'],
+                    title: '记录',
+                    cols: [[
+                        {
+                            field: 'employeeid',
+                            title: 'ID',
+                            sort: true,
+                            align: 'center',
+                            fixed: 'left'
+                        }, {
+                            field: 'name',
+                            title: '姓名',
+                            align: 'center'
+                        }, {
+                            field: 'inTime',
+                            title: '签到时间',
+                            align: 'center',
+                            sort: true
+                        }, {
+                            field: 'outTime',
+                            title: '签退时间',
+                            align: 'center'
+                        }, {
+                            field: 'ps',
+                            title: '签到状态',
+                            templet: Status01,
+                            align: 'center'
+                        }, {
+                            field: 'qtps',
+                            title: '签退状态',
+                            templet: Status02,
+                            align: 'center'
+                        }]],
+                    id: 'user_id'
+                });
+            }
+
+            //显示所有员工信息
+            showAll('sign/searchlist-PunchClock-ById', 'get');
+
+            function shuju(url_data1, url_data2) {
+                $.ajax({
+                    url: url_data1,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [5, 8, 16, 30, 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                //首次不执行
+                                if (!first) {
+                                    showAll(url_data2 + "start="
+                                        + (obj.curr - 1)
+                                        * obj.limit + "&count="
+                                        + obj.limit, "get");
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            shuju('getPunck-PageInfo', 'sign/searchlist-PunchClock-ById?');
+
+            function Status01(data) {
+                var status = data.ps;
+                if (status == '正常') {
+                    return "<span style='color:green;font-weight:bold;'>正常</span>"
+                } else if (status == '迟到') {
+                    return "<span style='color:red;font-weight:bold;'>迟到</span>"
+                }
+            }
+
+            function Status02(data) {
+                var status = data.qtps;
+                if (status == '正常') {
+                    return "<span style='color:green;font-weight:bold;'>正常</span>"
+                } else if (status == '未签退') {
+                    return "<span style='color:red;font-weight:bold;'>未签退</span>"
+                }
+            }
+
+            $('body').on('click', '#returnList', function () {
+                shuju('getPunck-PageInfo', 'sign/searchlist-PunchClock-ById?');
+                showAll('sign/searchlist-PunchClock-ById', 'get');
+                //$('#spantext').html("全部数据");
+            })
+            $('body').on('click', '#search', function () {
+                var date = $('#test3').val();
+                if ( date == ''){
+                    layer.msg('请输入日期');
+                }else {
+                    $('#spantext').html(date.substr(0,4)+'年 '+date.substr(5,2)+'月');
+                    shuju('getPunck-bydate?date=' + date ,
+                        'sign/searh-from-date?date=' + date
+                        + '&');
+                    showAll('sign/searh-from-date?date=' + date , 'get');
+                }
+            })
+
+            //年月选择器
+            $('body').on('focus', '#test3', function () {
+                laydate.render({
+                    elem: '#test3'
+                    ,type: 'month'
+                });
+            })
+        });
+
+</script>
+</body>
+</html>

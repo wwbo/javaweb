@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="resources/layui/css/layui.css">
+    <script src="resources/layui/layui.js" charset="utf-8"></script>
+    <script src="resources/jquery.min.js"></script>
+</head>
+<body>
+<!-- 页面内容结构 -->
+
+<!-- 表格上方标题 -->
+<blockquote class="layui-elem-quote">角色设置列表</blockquote>
+<!-- 员工信息表 -->
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-icon layui-icon-edit" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs layui-icon layui-icon-delete" lay-event="del">删除</a>
+</script>
+
+<!-- 添加和批量删除模块 -->
+<script type="text/html" id="toolbarDemo">
+    <button class="layui-btn layui-btn-sm layui-iconlayui-icon-refresh" id="returnList" style="margin-right:12px;">
+        返回角色列表
+    </button>
+    id搜索：
+    <div class="layui-inline">
+        <input type="text" class="layui-input" name="selectid" id="selectid" placeholder="请输入id" autocomplete="off"
+               size="10" style="height:34px;">
+    </div>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-search" id="search-from-id">搜索</button>
+
+
+    <div class="layui-inline" style="margin-left:12px;">
+        部门搜索：
+        <div class="layui-input-inline" style="width:165px;">
+            <select name="modules" lay-verify="required" id="depart" style="width:20px;">
+            </select>
+        </div>
+    </div>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-search" id="search-from-depart">查询</button>
+
+    <div class="layui-inline" style="margin-left:12px;">
+        角色搜索：
+        <div class="layui-input-inline" style="width:165px;">
+            <select name="modules" lay-verify="required" id="roleSelect" style="width:20px;">
+            </select>
+        </div>
+    </div>
+    <button class="layui-btn layui-btn-sm layui-icon layui-icon-search" id="search-from-role">确定</button>
+
+</script>
+<!-- 分页模块 -->
+<div id="pages"></div>
+
+<!-- 编辑员工信息弹出层 -->
+<div id="update-user-layer" style="display: none; padding: 20px">
+    <form id="update-user-form" class="layui-form layui-form-pane"
+          lay-filter="update-user-form" method="post">
+        <div class="layui-form-item" style="display: none;">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" id="editId" class="layui-input"
+                       readonly="readonly" autocomplete="off" disabled=”disabled”>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input"
+                       lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门</label>
+            <div class="layui-input-block">
+                <select id="depart01" name="depart" lay-filter="depart">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block">
+                <select name="role" lay-verify="required" id="role" style="width:20px;"></select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" class="layui-input"
+                       lay-verify="phone" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" class="layui-input"
+                       lay-verify="email" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" id="password1"
+                       class="layui-input" lay-verify="required" readonly="readonly"
+                       autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-left:20px;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit
+                        lay-filter="udpate-user-form-submit" style="width:110px;">提交
+                </button>
+                <!-- <button type="reset"
+                    class="layui-btn layui-btn-primary layui-icon layui-icon-refresh">重置</button> -->
+                <button type="button" class="layui-btn layui-icon layui-btn-danger"
+                        id="getPwd1" style="width:110px;margin-left:20px;">生成密码
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    layui.use(['jquery', 'laypage', 'layer', 'table', 'form'],
+        function () {
+            var $ = layui.$;
+            var layer = layui.layer;
+            var table = layui.table;
+            var form = layui.form;
+            var laypage = layui.laypage;
+
+            function Ajax(){
+                $.ajax({
+                    url: 'list_RoleAndDepart',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#depart').append("<option value=''>请选择查询部门</option>");
+                        for (var i=0; i<data.data1.length; i++){
+                            $('#depart').append("<option value="+data.data1[i].dept_name+">"+data.data1[i].dept_name+"</option>");
+                        }
+                        $('#roleSelect').append("<option value=''>请选择查询角色</option>");
+                        for (var i=0; i<data.data.length; i++){
+                            $('#roleSelect').append("<option value="+data.data[i].desc_+">"+data.data[i].desc_+"</option>");
+                        }
+                    }
+                })
+            }
+            function departAndrole(){
+                $.ajax({
+                    url: 'list_RoleAndDepart',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#depart').append("<option value=''>请选择查询部门</option>");
+                        for (var i=0; i<data.data1.length; i++){
+                            $('#depart').append("<option value="+data.data1[i].dept_name+">"+data.data1[i].dept_name+"</option>");
+                            $('#depart01').append("<option value="+data.data1[i].dept_name+">"+data.data1[i].dept_name+"</option>");
+                        }
+                        $('#roleSelect').append("<option value=''>请选择查询角色</option>");
+                        for (var i=0; i<data.data.length; i++){
+                            $('#roleSelect').append("<option value="+data.data[i].desc_+">"+data.data[i].desc_+"</option>");
+                            $('#role').append("<option value="+data.data[i].desc_+">"+data.data[i].desc_+"</option>");
+                        }
+                    }
+                })
+            }
+            departAndrole();
+            function showAll(url_data, method_data) {
+                //显示所有员工信息
+                table.render({
+                    elem: '#test',
+                    url: url_data,
+                    method: method_data,
+                    limit: 8,
+                    toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+                    defaultToolbar: ['filter', 'exports', 'print'],
+                    title: '用户数据表',
+                    cols: [[{
+                        type: 'checkbox',
+                        fixed: 'left'
+                    }, {
+                        field: 'id',
+                        title: 'ID',
+                        sort: true,
+                        align: 'center',
+                        fixed: 'left',
+                        width: 110
+                    }, {
+                        field: 'name',
+                        title: '姓名',
+                        align: 'center'
+                    }, {
+                        field: 'depart',
+                        title: '部门',
+                        align: 'center'
+                    }, {
+                        field: 'phone',
+                        title: '手机',
+                        align: 'center'
+                    }, {
+                        field: 'email',
+                        title: '邮箱',
+                        align: 'center'
+                    }, {
+                        field: 'password',
+                        title: '密码',
+                        align: 'center'
+                    }, {
+                        field: 'role',
+                        title: '角色',
+                        align: 'center'
+                    }, {
+                        fixed: 'right',
+                        title: '操作',
+                        toolbar: '#barDemo',
+                        align: 'center',
+                        width: 145
+                    }]],
+                    id: 'user_id'
+                });
+            }
+
+
+            function roleAjax(){
+                $.ajax({
+                    url: 'list_Role',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data.data);
+
+                    }
+                })
+            }
+
+            //显示所有员工信息
+            showAll('list', 'get');
+
+            function shuju(url_data1, url_data2) {
+                $.ajax({
+                    url: url_data1,
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        laypage.render({
+                            elem: 'pages',
+                            count: data.total//数据总数，从服务端得到
+                            ,
+                            limit: data.count,
+                            limits: [5, 8, 16, 30, 1000],
+                            groups: 5,
+                            layout: ['count', 'prev', 'page', 'next',
+                                'limit', 'refresh', 'skip'],
+                            jump: function (obj, first) {
+                                Ajax();
+                                //首次不执行
+                                if (!first) {
+                                    showAll(url_data2 + "start="
+                                        + (obj.curr - 1)
+                                        * obj.limit + "&count="
+                                        + obj.limit, "get");
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            shuju('getPageInfo', 'list?');
+            //批量删除已选择的行
+            $('body').on(
+                'click',
+                '#delete-all-select',
+                function () {
+                    var arr = table.checkStatus('user_id').data;
+                    console.log(arr);
+                    if (arr.length == 0) {
+                        layer.msg("请选择要删除的项！");
+                    } else {
+                        layer.confirm('确定删除这' + arr.length
+                            + '条数据吗？', function (index) {
+                            var ids = [];
+                            for (var i in arr) {
+                                ids.push(arr[i].id);
+                            }
+                            console.log(ids);
+                            // ajax方式批量删除员工信息
+                            $.ajax({
+                                url: 'deleteBatch',
+                                type: "post",
+                                data: {
+                                    "ids[]": ids
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 1) {
+                                        Ajax();
+                                        layer.msg('删除成功');
+                                        table.reload('user_id');
+                                        shuju('getPageInfo',
+                                            'list?');
+                                    } else {
+                                        layer.msg('删除失败');
+                                        console.log(eids);
+                                    }
+                                },
+                                error: function () {
+                                    console.log("ajax error");
+                                }
+                            });
+                            layer.close(index);
+                        });
+                    }
+
+                })
+
+            //监听行工具栏事件：删除用户与更新用户
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                var event = obj.event;
+                // 删除用户事件
+                if (event === 'del') {
+                    layer.confirm('确定删除该员工信息吗？', function (index) {
+                        // ajax方式删除用户
+                        $.ajax({
+                            url: 'delete',
+                            type: "post",
+                            data: {
+                                "id": data.id
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.status == 1) {
+                                    Ajax();
+                                    layer.msg('删除成功');
+                                    table.reload('user_id');
+                                    shuju('getPageInfo', 'list?');
+                                } else {
+                                    layer.msg('删除失败');
+                                }
+                            },
+                            error: function () {
+                                console.log("ajax error");
+                            }
+                        });
+                        layer.close(index);
+                    });
+                }
+
+                //编辑员工信息
+                if (event == 'edit') {
+                    console.log(data);
+                    console.log(data.role);
+                    form.val('update-user-form', {
+                        'id': data.id,
+                        'name': data.name,
+                        'depart': data.depart,
+                        'password': data.password,
+                        'role': data.role,
+                        'phone': data.phone,
+                        'email': data.email
+                    });
+                    // 显示更新员工信息表单的弹出层
+                    layer.open({
+                        type: 1,
+                        title: '编辑员工信息 ( id=' + data.id + ' )',
+                        skin: 'layui-layer-molv',
+                        area: ['460px'],
+                        content: $('#update-user-layer')
+                    });
+                    // 更新用户表单提交
+                    form.on('submit(udpate-user-form-submit)',
+                        function (data) {
+                            var depart = data.field.depart;
+                            var role = data.field.role;
+                            $.ajax({
+                                url: "updateRole",
+                                type: "post",
+                                data: JSON.stringify(data.field),
+                                contentType: 'application/json',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 1) {
+                                        Ajax();
+                                        layer.close(layer.index);
+                                        form.render();
+                                        layer.msg('更新成功');
+                                        table.reload('user_id');
+                                    } else {
+                                        layer.msg('更新失败');
+                                    }
+                                },
+                                error: function () {
+                                    console.log(data.field);
+                                    console.log("ajax error");
+                                }
+                            });
+                            // 阻止表单跳转
+                            return false;
+                        });
+                }
+            });
+
+            $('body').on('click', '#returnList', function () {
+                Ajax();
+                shuju('getPageInfo', 'list?');
+                showAll('list', 'get');
+            })
+
+            //检验id的合法性
+            $('body').on('click', '#search-from-id', function () {
+                var sid = $("#selectid").val();
+                if (sid == "") {
+                    layer.msg('不能为空');
+                    return false;
+                }
+                else if (!(/(^[1-9]\d*$)/.test(sid))) {
+                    layer.msg('请输入合法id');
+                    return false;
+                } else {
+                    Ajax();
+                    shuju("search-from-id?id=" + sid,
+                        'list?');
+                    showAll("search-from-id?id=" + sid,
+                        "GET");
+                }
+            })
+
+            $('body').on(
+                'click',
+                '#search-from-depart',
+                function () {
+                    var depart = $("#depart").val();
+                    if (depart == "") {
+                        layer.msg("不能为空");
+                        return false;
+                    } else {
+                        Ajax();
+                        shuju('search-from-depart?depart=' + depart
+                            + "&page=1&limit=8",
+                            'search-from-depart?depart=' + depart
+                            + '&');
+                        showAll('search-from-depart?depart=' + depart,
+                            "GET");
+                    }
+                })
+            $('body').on(
+                'click',
+                '#search-from-role',
+                function () {
+                    var role = $("#roleSelect").val();
+                    if (role == "") {
+                        layer.msg("不能为空");
+                        return false;
+                    } else {
+                        Ajax();
+                        shuju('search-from-role?role=' + role
+                            + "&page=1&limit=8",
+                            'search-from-role?role=' + role
+                            + '&');
+                        showAll('search-from-role?role=' + role,
+                            "GET");
+                    }
+                })
+
+            function pwd(pw) {
+                $.ajax({
+                    url: 'getPwd',
+                    method: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                        var pwd = data.pwd;
+                        $(pw).val(pwd);
+                    }
+                });
+            }
+
+            //获取生成的随机密码
+            $('#getPwd').click(function () {
+                pwd("#password");
+            });
+
+            $('#getPwd1').click(function () {
+                pwd("#password1");
+            });
+        });
+</script>
+</body>
+</html>

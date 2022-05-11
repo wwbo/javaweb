@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.LeaveMapper">
+    <insert id="insert" parameterType="Leave">
+        insert into leavetime(eid,starttime,endtime,reason,filldate,status,days) values(#{eid},#{starttime},#{endtime},#{reason},#{filldate},#{status},#{days})
+    </insert>
+    <select id="listleavetimeById" resultType="Leave">
+        select lt.eid, e.name, lt.starttime, lt.endtime, days , lt.filldate, lt.reason, lt.status from leavetime lt
+        left join employee e
+        on e.id = lt.eid
+        where lt.eid = #{eid}
+        order by lt.filldate desc
+        <if test="start!=null and count!=null">
+            limit #{start},#{count}
+        </if>
+    </select>
+    <select id="totalLeavetime" resultType="int">
+		select count(*) from leavetime where eid = #{eid}
+	</select>
+    <select id="leaveFillTime" resultType="Leave">
+        select filldate from leavetime where eid = #{eid}
+    </select>
+    <select id="allApproval" resultType="Leave">
+SELECT lt.eid,e.name,d.dept_name 'depart',r.desc_ 'role',lt.starttime,lt.endtime,lt.reason,lt.filldate,lt.days,lt.`status` FROM leavetime lt
+left join employee e
+on lt.eid = e.id
+left join employee_role er
+on e.id = er.eid
+left join role r
+on er.rid = r.id
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+order by lt.filldate desc
+limit #{start},#{count}
+    </select>
+    <select id="allApprovalDepart" resultType="Leave">
+SELECT lt.eid,e.name,d.dept_name 'depart',r.desc_ 'role',lt.starttime,lt.endtime,lt.reason,lt.filldate,lt.days,lt.`status` FROM leavetime lt
+left join employee e
+on lt.eid = e.id
+left join employee_role er
+on e.id = er.eid
+left join role r
+on er.rid = r.id
+left join employee_depart ed
+on e.id = ed.eid
+left join depart d
+on d.dept_id = ed.did
+where d.dept_id = #{dept_id}
+order by lt.filldate desc
+limit #{start},#{count}
+    </select>
+    <select id="selectDept_id" resultType="int">
+        select d.dept_id from employee e
+        left join employee_depart ed
+        on e.id = ed.eid
+        left join depart d
+        on d.dept_id = ed.did
+        where e.id = #{id}
+    </select>
+    <select id="countDepart" resultType="int">
+        select count(*) from leavetime lt
+        left join employee_depart ed
+				on ed.eid = lt.eid
+				left join depart d
+				on d.dept_id = ed.did
+				where d.dept_id = #{dept_id}
+    </select>
+    <select id="countApproval" resultType="int">
+        select count(*) from leavetime
+    </select>
+    <update id="reject" parameterType="Leave">
+        update leavetime set status='未通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+    <update id="pass" parameterType="Leave">
+        update leavetime set status='已通过'
+        where eid = #{eid} and filldate = #{filldate}
+    </update>
+</mapper>
